@@ -31,7 +31,7 @@ struct ContentView: View {
             }
             .navigationTitle("Birthdays")
             .safeAreaInset(edge: .bottom) {
-                VStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, spacing: 20) {
+                VStack(alignment: .center, spacing: 20) {
                     Text("New Birthday")
                         .font(.headline)
                     DatePicker(selection: $newDate, in: Date.distantPast...Date.now, displayedComponents: .date){
@@ -40,7 +40,7 @@ struct ContentView: View {
                     }
                     Button("Save") {
                         let newFriend = Friend(name: newName, birthday: newDate)
-//                        friends.append(newFriend)
+                        //                        friends.append(newFriend)
                         context.insert(newFriend)
                         newName = ""
                         newDate = .now
