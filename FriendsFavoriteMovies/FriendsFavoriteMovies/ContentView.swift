@@ -11,20 +11,30 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Movie.title) private var movies: [Movie]
+    
+    @State private var newMovie: Movie?
 
     var body: some View {
         NavigationSplitView {
-            List {
-                ForEach(movies) { movie in
-                    NavigationLink {
-//                        Text(movie.title)
-//                            .navigationTitle("Movie")
-                        MovieDetail(movie: movie)
-                    } label: {
-                        Text(movie.title)
+            Group {
+                if !movies.isEmpty {
+                    List {
+                        ForEach(movies) { movie in
+                            NavigationLink {
+        //                        Text(movie.title)
+        //                            .navigationTitle("Movie")
+                                MovieDetail(movie: movie)
+                            } label: {
+                                Text(movie.title)
+                            }
+                        }
+                        .onDelete(perform: deleteItems)
+                    }
+                } else {
+                    ContentUnavailableView {
+                        Label("No Movies", systemImage: "film.stack")
                     }
                 }
-                .onDelete(perform: deleteItems)
             }
             .navigationTitle("Movies")
             .toolbar {
@@ -37,6 +47,12 @@ struct ContentView: View {
                     }
                 }
             }
+            .sheet(item: $newMovie){ movie in
+                NavigationStack {
+                    MovieDetail(movie: movie, isNew: true)
+                }
+                .interactiveDismissDisabled()
+            }
         } detail: {
             Text("Select an movie")
         }
@@ -44,8 +60,9 @@ struct ContentView: View {
 
     private func addMovie() {
         withAnimation {
-            let newItem = Movie(title: "New Movie", releaseDate: .now)
+            let newItem = Movie(title: "", releaseDate: .now)
             modelContext.insert(newItem)
+            newMovie = newItem
         }
     }
 
@@ -62,4 +79,9 @@ struct ContentView: View {
     ContentView()
 //        .modelContainer(for: Movie.self, inMemory: true)
         .modelContainer(SampleData.shared.modelContainer)
+}
+
+#Preview("Empty List"){
+    ContentView()
+        .modelContainer(for: Movie.self, inMemory: true)
 }
